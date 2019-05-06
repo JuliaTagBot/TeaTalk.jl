@@ -1,5 +1,10 @@
 module TeaTalk
 
-greet() = print("Hello World!")
+using Reexport
+
+@reexport using LinearAlgebra
+@reexport using CompScienceMeshes
+@reexport using BEAST
+@reexport using Plots
 
 end # module
