@@ -7,4 +7,6 @@ using Reexport
 @reexport using BEAST
 @reexport using Plots
 
+Base.ones(::Type{T}, m::Matrix) where {T} = Base.ones(T, size(m))
+
 end # module
