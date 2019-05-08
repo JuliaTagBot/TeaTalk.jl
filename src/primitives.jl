@@ -52,5 +52,5 @@ function meshdisk(;radius, h, udim=3)
     sV = [point(V[i,:]...) for i in axes(V,1)]
     sF = [index(F[i,:]...) for i in 1:idx-1]
 
-    Mesh(sV,sF)
+    CompScienceMeshes.Mesh(sV,sF)
 end

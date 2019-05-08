@@ -11,7 +11,12 @@ Y = curl(X)
 
 A = assemble(Id,Y,Y)
 F = eigen(A)
-heatmap(reshape(F.vectors[:,2],(nx,ny)))
+p = sortperm(F.values)
+u = F.vectors[:,p[3]]
+
+heatmap(reshape(u,(nx,ny)))
+fcr, geo = facecurrents(u,X)
+Makie.mesh(m, color=fc(getindex.(fcr,1)), shading=false)
 
 # Try to recreate the matlab logo
 h = 0.025
@@ -21,7 +26,7 @@ nx = ny = round(Int,1/h-1)
 
 verts = skeleton(m,0)
 function notll(cell)
-    p = cartesian(center(chart(verts,cell)))
+    p = center(verts,cell)
     tol = eps(eltype(p))
     abs(p[1] - 0.5) < tol && return false
     abs(p[1] + 0.5) < tol && return false
@@ -36,14 +41,17 @@ Y = curl(X)
 
 A = assemble(Id,Y,Y)
 F = eigen(A)
+p = sortperm(F.values)
+u = F.vectors[:,p[3]]
+
+fcr, geo = facecurrents(u,X)
+Makie.mesh(m, color=fc(getindex.(fcr,1)), shading=false)
 
 H = zeros(nx+2,ny+2)
-u = F.vectors[:,1]
-for i in eachindex(u)
-    x = cartesian(center(chart(m,cells(verts1)[i])))
+for (i,c) in pairs(cells(verts1))
+    x = center(verts1,c)
     p = round(Int,(x[2]+0.5)/h)+1
     q = round(Int,(x[1]+0.5)/h)+1
     H[p,q] = u[i]
 end
-heatmap(H)
-surface(H)
+surface(H/maximum(H)*size(H,1)/2, shading=false)
