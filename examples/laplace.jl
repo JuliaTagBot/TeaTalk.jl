@@ -1,0 +1,49 @@
+using TeaTalk
+
+h = 0.025
+m = meshrectangle(1.0, 1.0, h, 3)
+nx = ny = round(Int,1/h-1)
+
+X = lagrangec0d1(m)
+Id = BEAST.Identity()
+
+Y = curl(X)
+
+A = assemble(Id,Y,Y)
+F = eigen(A)
+heatmap(reshape(F.vectors[:,2],(nx,ny)))
+
+# Try to recreate the matlab logo
+h = 0.025
+m = meshrectangle(1.0, 1.0, h, 3)
+m = CompScienceMeshes.translate(m, [-0.5, -0.5, 0.0])
+nx = ny = round(Int,1/h-1)
+
+verts = skeleton(m,0)
+function notll(cell)
+    p = cartesian(center(chart(verts,cell)))
+    tol = eps(eltype(p))
+    abs(p[1] - 0.5) < tol && return false
+    abs(p[1] + 0.5) < tol && return false
+    abs(p[2] - 0.5) < tol && return false
+    abs(p[2] + 0.5) < tol && return false
+    p[1] > tol || p[2] > tol
+end
+
+verts1 = submesh(notll, verts)
+X = lagrangec0d1(m, getindex.(cells(verts1),1), Val{3})
+Y = curl(X)
+
+A = assemble(Id,Y,Y)
+F = eigen(A)
+
+H = zeros(nx+2,ny+2)
+u = F.vectors[:,1]
+for i in eachindex(u)
+    x = cartesian(center(chart(m,cells(verts1)[i])))
+    p = round(Int,(x[2]+0.5)/h)+1
+    q = round(Int,(x[1]+0.5)/h)+1
+    H[p,q] = u[i]
+end
+heatmap(H)
+surface(H)

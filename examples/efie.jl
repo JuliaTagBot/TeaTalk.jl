@@ -21,7 +21,7 @@ F = Maxwell3D.farfield(wavenumber=κ)
 ffd = potential(F, pts, u, X)
 fcr, geo = facecurrents(u, X)
 
-xs = range(-2,stop=2,length=50)
+xs = range(-2,stop=2,length=51)
 zs = range(-4,stop=4,length=100)
 gridpoints = [point(x,0,z) for x in xs, z in zs]
 
@@ -33,4 +33,5 @@ nfd .-= E.(gridpoints)
 p1 = scatter(Θ, real.(norm.(ffd)),xlabel="\\theta",legend=false);
 p2 = heatmap(clamp.(real.(norm.(nfd)), 0.0, 2.0));
 p3 = contour(clamp.(real.(norm.(nfd)), 0.0, 2.0));
-plot(p1,p2,p3,layout=(3,1))
+p4 = plot(real.(getindex.(nfd,2))[25,:],legend=false);
+plot(p1,p2,p3,p4,layout=(2,2))
