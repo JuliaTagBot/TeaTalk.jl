@@ -30,8 +30,8 @@ nfd = potential(N, gridpoints, u, X)
 nfd = reshape(nfd, size(gridpoints))
 nfd .-= E.(gridpoints)
 
-p1 = Makie.mesh(Γ,color=fc(norm.(fcr)),shading=false)
-p2 = scatter(Θ, real.(norm.(ffd)),xlabel="\\theta",legend=false)
-p3 = contour(clamp.(real.(norm.(nfd)), 0.0, 2.0))
-p4 = plot(real.(getindex.(nfd,2))[25,:],legend=false)
+p1 = Makie.mesh(Γ,color=fc(norm.(fcr)),shading=false);
+p2 = scatter(Θ, real.(norm.(ffd)),legend=false);
+p3 = heatmap(clamp.(real.(norm.(nfd)), 0.0, 2.0));
+p4 = lines(real.(getindex.(nfd,2))[25,:],legend=false);
 s = vbox(hbox(p2,p1),hbox(p4,p3))
