@@ -2,16 +2,23 @@ using TeaTalk
 
 Γ = readmesh(joinpath(@__DIR__,"meshes","sphere2.in"))
 X = raviartthomas(Γ)
+Y = buffachristiansen(Γ)
 
 κ = 1.0
-t = Maxwell3D.singlelayer(wavenumber=κ)
+μ = ϵ = 1.0
+ω = κ/√(ϵ*μ)
+
+dl = Maxwell3D.doublelayer(wavenumber=κ)
+nx = BEAST.NCross()
+
 E = Maxwell3D.planewave(direction=ẑ, polarization=ŷ, wavenumber=κ)
-e = (n × E) × n
+H = -1/(im*μ*ω)*curl(E)
+h = (n × H) × n
 
 @hilbertspace j
 @hilbertspace k
-efie = @discretise t[k,j]==e[k]  j∈X k∈X
-u = gmres(efie)
+mfie = @discretise (dl+0.5nx)[k,j] == h[k]  j∈X k∈Y
+u = gmres(mfie)
 
 Φ = range(0,stop=0,length=1)
 Θ = range(0,stop=π,length=100)
@@ -33,6 +40,6 @@ nfd .-= E.(gridpoints)
 sc = Scene()
 p1 = Makie.mesh(Γ,color=fc(norm.(fcr)),shading=false);
 p2 = scatter(Θ, real.(norm.(ffd)),legend=false);
-p3 = heatmap(clamp.(real.(norm.(nfd')), 0.0, 2.0));
+p3 = heatmap(clamp.(real.(norm.(nfd')), 0.0, 2.0), colorbar=true);
 p4 = lines(real.(getindex.(nfd,2))[25,:],legend=false);
 s = vbox(hbox(p2,p1),hbox(p4,p3))
