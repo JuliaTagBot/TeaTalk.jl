@@ -1,17 +1,38 @@
 using TeaTalk
-
 Γ = readmesh(joinpath(dirname(d),"../examples/meshes","sphere2.in"))
-X = raviartthomas(Γ)
 
-κ = 1.0
-sl = Maxwell3D.singlelayer(wavenumber=κ)
+X = raviartthomas(Γ)
+Y = buffachristiansen(Γ)
+
+κ = ω = 1.0; γ = κ*im
+N = BEAST.NCross()
+T = Maxwell3D.singlelayer(wavenumber=κ)
+
+Txx = assemble(T,X,X)
+F_Txx = eigen(Txx)
+@show maximum(abs.(F_Txx.values)) / minimum(abs.(F_Txx.values))
+
+Tyy = assemble(T,Y,Y)
+F_Tyy = eigen(Tyy)
+@show maximum(abs.(F_Tyy.values)) / minimum(abs.(F_Tyy.values))
+
+Nxy = assemble(N,X,Y)
+@show cond(Nxy)
+
+iNxy = inv(Nxy)
+P = iNxy' * Tyy * iNxy
+A = P * Txx
+
+F_A = eigen(A)
+@show maximum(abs.(F_A.values)) / minimum(abs.(F_A.values))
+scatter(real.(F_A.values), imag.(F_A.values), markersize=0.01, limits=FRect(-1,-1,2,2))
+
 E = Maxwell3D.planewave(direction=ẑ, polarization=ŷ, wavenumber=κ)
 e = (n × E) × n
+b = assemble(e,X)
 
-@hilbertspace j
-@hilbertspace k
-efie = @discretise sl[k,j]==e[k]  j∈X k∈X
-u = gmres(efie)
+solver = BEAST.GMRESSolver(A)
+u, conv_hist = solve(solver,P*b)
 
 Φ = range(0,stop=0,length=1)
 Θ = range(0,stop=π,length=100)

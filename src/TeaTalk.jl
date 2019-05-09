@@ -37,8 +37,11 @@ end
 
 fc(c) = (C=similar(c,3length(c)); for (i,x) ∈ pairs(c) C[3(i-1).+(1:3)].=x end; C)
 
+uv(i,n) = (a = zeros(n); a[i] = 1; a)
+
 export fc
 export center
 export meshdisk
+export uv
 
 end # module

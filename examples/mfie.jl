@@ -1,5 +1,5 @@
 using TeaTalk
-Γ = readmesh(joinpath(@__DIR__,"meshes","sphere2.in"))
+Γ = readmesh(joinpath(dirname(d),"../examples/meshes","sphere2.in"))
 X = raviartthomas(Γ)
 Y = buffachristiansen(Γ)
 
