@@ -1,5 +1,5 @@
 using TeaTalk
-
+d = pathof(TeaTalk)
 Γ = readmesh(joinpath(dirname(d),"../examples/meshes","sphere2.in"))
 X = raviartthomas(Γ)
 

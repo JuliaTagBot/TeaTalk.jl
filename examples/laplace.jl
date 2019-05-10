@@ -12,13 +12,15 @@ Y = curl(X)
 A = assemble(Id,Y,Y)
 F = eigen(A)
 p = sortperm(F.values)
-u = F.vectors[:,p[3]]
+u = F.vectors[:,p[6]]
 
 heatmap(reshape(u,(nx,ny)))
 fcr, geo = facecurrents(u,X)
 Makie.mesh(m, color=fc(getindex.(fcr,1)), shading=false)
 
 # Try to recreate the matlab logo
+using TeaTalk
+Id = BEAST.Identity()
 h = 0.025
 m = meshrectangle(1.0, 1.0, h, 3)
 m = CompScienceMeshes.translate(m, [-0.5, -0.5, 0.0])
@@ -42,7 +44,7 @@ Y = curl(X)
 A = assemble(Id,Y,Y)
 F = eigen(A)
 p = sortperm(F.values)
-u = F.vectors[:,p[3]]
+u = F.vectors[:,p[1]]
 
 fcr, geo = facecurrents(u,X)
 Makie.mesh(m, color=fc(getindex.(fcr,1)), shading=false)
